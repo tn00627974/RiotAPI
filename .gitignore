@@ -1,0 +1,65 @@
+## Ignore build results
+bin/
+obj/
+out/
+
+## User-specific files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+## Rider / JetBrains
+.idea/
+
+## VS Code
+.vscode/
+.vs
+
+## ASP.NET specific
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.Secrets.json
+
+## Logs
+*.log
+logs/
+log/
+
+## Environment secrets
+.env
+
+## OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+## Dotnet tools / packages
+*.nupkg
+*.snupkg
+*.db
+.nuget/
+packages/
+
+## Publish artifacts
+publish/
+*.Publish.xml
+
+## Docker (如果未啟用)
+Dockerfile
+docker-compose*
+
+## Optional: ignore test result files
+TestResults/
+
+## Optional: ignore coverage reports
+coverage/
+*.lcov
+*.coverage
+
+## Optional: ignore swagger auto-gen
+swagger/
+
+appsettings.Development.json
+appsettings.json

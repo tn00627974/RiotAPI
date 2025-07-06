@@ -2,18 +2,21 @@
 
 1. 註冊 Riot 帳號並前往 Riot 開發者平台  https://developer.riotgames.com/
 2. 申請開發者 Key（**開發用 Key 有效 24 小時**，正式環境需審核）
-	-  API KEY : [[Ulysses/GitHub專案/未實施專案/Riot API Key|你申請的API KEY]]
+	-  API KEY : [[Ulysses/GitHub專案/RiotServer/Riot API Key|你申請的API KEY]]
 3. 取得你的 `X-Riot-Token`，後續 API 都要用這個做身份驗證
 
 📌 Step 1. 用 Riot ID 查 puuid
 Simple :
 ```
-GET https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}
+GET 
+https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}
 Header:
 X-Riot-Token: <你的 API Key>
 ```
+- {gameName} : `真實遊戲ID`
+- {tagLine} : `#tw2`
 
-GET 
+✅GET 
 ```
 https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{你的id}/TW2
 ```
@@ -27,14 +30,15 @@ https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{你的id}/TW
 ```
 
 📌 Step 2. 用 puuid 查比賽列表 
-GET  
-✅要將asia.api.riotgames.com 更換成 **sea**.api.riotgames.com 
+GET ✅要將asia.api.riotgames.com 更換成 **sea**.api.riotgames.com 
 ```
 https://sea.api.riotgames.com/lol/match/v5/matches/by-puuid/{{puuid}}}/ids?start=0&count=
 ```
 
 ![[Ulysses/成長筆記本/資料工程師/附件圖片檔/Pasted image 20250705215341.png]]
 ![[Ulysses/成長筆記本/資料工程師/附件圖片檔/Pasted image 20250705223330.png]]
+
+![[Ulysses/成長筆記本/資料工程師/附件圖片檔/Pasted image 20250706200007.png]]
 
 | 地區/伺服器   | Routing Region（用於 Match API） |
 | -------- | ---------------------------- |
@@ -43,6 +47,101 @@ https://sea.api.riotgames.com/lol/match/v5/matches/by-puuid/{{puuid}}}/ids?start
 | 日本       | **asia**                     |
 | 歐洲       | **europe**                   |
 | 北美       | **americas**                 |
+
+📌 Step 3. 用 puuid 查比賽列表細節
+
+Simple :
+```
+GET
+https://sea.api.riotgames.com/lol/match/v5/matches/{matchId}
+```
+- {matchId} : `遊戲對戰編號`
+
+✅GET
+```
+https://sea.api.riotgames.com/lol/match/v5/matches/TW2_316231903
+```
+
+
+---
+
+
+## ✅ 開發總目標
+
+打造一個簡易網頁平台，能自動查詢你朋友（6～10人）的戰績，並整合在一個畫面上查看。
+
+---
+
+## ✅ TODO LIST + 教學分解
+
+### 🟧 第 1 階段：基礎資料準備與設計
+
+|步驟|項目|教學說明|
+|---|---|---|
+|✅ 1|收集所有團員的 `gameName + tagLine` → 轉換為 `puuid`|使用 Riot API `/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}`|
+|✅ 2|建立 puuid 名單（JSON）|可放在本地 JSON 檔或資料庫，格式如下：`[{ "name": "深邃紅月", "tag": "tw2", "puuid": "xxxx" }, ...]`|
+|✅ 3|申請 Riot 開發者 API 金鑰|[https://developer.riotgames.com/](https://developer.riotgames.com/)每日更新一次 Key|
+
+---
+
+### 🟨 第 2 階段：後端 API 建構（C# ASP.NET 建議）
+
+|步驟|項目|教學說明|
+|---|---|---|
+|🔧 4|建立 ASP.NET Web API 專案（.NET 8）|建議使用 `dotnet new webapi` 或 Visual Studio 建立|
+|🔧 5|建立服務 `RiotApiService`，封裝 Riot API 呼叫邏輯|3 層邏輯：① 查 puuid → matchIds② 查 matchId → match info③ 過濾出自己戰績|
+|🔧 6|建立 Controller `/api/match/{puuid}` → 回傳該玩家最近 10 場資料|使用 `HttpClient` 進行請求，格式化回傳 JSON|
+|🔧 7|建立一個 `/api/team` API → 迴圈查詢所有團員資料|可以並行查詢 6～10 個 puuid 的比賽結果|
+
+---
+
+### 🟩 第 3 階段：快取與排程（選用）
+
+|步驟|項目|教學說明|
+|---|---|---|
+|⏱️ 8|將查詢結果快取至記憶體 / Redis / JSON 檔案|避免過度打 Riot API，可 15~30 分鐘更新一次|
+|⏱️ 9|加入自動更新排程（BackgroundService 或 Hangfire）|定時更新所有 puuid 的比賽資料|
+
+---
+
+### 🟦 第 4 階段：前端資料展示
+
+|步驟|項目|教學說明|
+|---|---|---|
+|💻 10|建立簡單網頁頁面（用 ASP.NET MVC、Razor Pages 或 React）|顯示每位玩家卡片，內含最近 10 場對戰紀錄|
+|💻 11|呼叫 `/api/team` API 並用 JavaScript 顯示資料|用 fetch() 抓資料，渲染列表|
+|💻 12|美化介面（建議用 Tailwind CSS）|可加入卡片、英雄頭像、勝敗配色、KDA 字體強調等樣式|
+
+---
+
+### 🟪 第 5 階段：部署與優化（可選）
+
+|步驟|項目|教學說明|
+|---|---|---|
+|🚀 13|本地測試無誤後，部署到 VPS / 雲端|可用 Windows Server + IIS、或 Azure Web App|
+|🔐 14|加入錯誤處理與 API 過載保護|若有速率限制，需加入 retry、封鎖機制等|
+|📈 15|可加上資料分析（例如每人勝率、MVP場次等）|額外統計功能：勝場率、平均 KDA、最常玩英雄等|
+
+---
+
+## 🛠️ 最小可執行版本（MVP）
+
+你只需要完成前面 7 步，就能完成「團隊戰績總表」的基礎功能 ✅
+
+---
+
+## 📦 我可以提供的資源（你只要指定）
+
+1. ✅ C# ASP.NET Web API 專案模板（含 Riot 封裝服務）    
+2. ✅ JavaScript / Razor 前端頁面 + Tailwind 樣式    
+3. ✅ Riot API 呼叫工具類別（含 PUUID/Match 封裝）    
+4. ✅ Redis 快取與排程更新範例（選用）    
+5. ✅ 完整部署教學流程（若需公開上網）
+    
+---
+
+你想從哪一階段開始呢？  
+我可以幫你從「建構後端 API」或「前端樣板」先做一個開始版本 🔧
 
 
 ---
@@ -75,12 +174,12 @@ https://sea.api.riotgames.com/lol/match/v5/matches/by-puuid/{{puuid}}}/ids?start
 
 ### 🧠 三、後端開發技能（C# or Node.js）
 
-|項目|技術學習|推薦資源|
-|---|---|---|
-|API 架設|ASP.NET Core Web API / Node.js + Express|[官方教學](https://chatgpt.com/c/f)|
-|快取設計|Redis（用來避免過度查詢 API）|[Redis 速成教學](https://chatgpt.com/c/f)|
-|JWT 登入系統|ASP.NET Identity / Firebase Auth|[JWT 教學](https://chatgpt.com/c/f)|
-|排程任務|Hangfire / Quartz.NET / Node-cron|[Hangfire 教學](https://chatgpt.com/c/f)|
+| 項目       | 技術學習                                     | 推薦資源                                   |
+| -------- | ---------------------------------------- | -------------------------------------- |
+| API 架設   | ASP.NET Core Web API / Node.js + Express | [官方教學](https://chatgpt.com/c/f)        |
+| 快取設計     | Redis（用來避免過度查詢 API）                      | [Redis 速成教學](https://chatgpt.com/c/f)  |
+| JWT 登入系統 | ASP.NET Identity / Firebase Auth         | [JWT 教學](https://chatgpt.com/c/f)      |
+| 排程任務     | Hangfire / Quartz.NET / Node-cron        | [Hangfire 教學](https://chatgpt.com/c/f) |
 
 ---
 
