@@ -32,13 +32,13 @@ https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{你的id}/TW
 📌 Step 2. 用 puuid 查比賽列表 
 GET ✅要將asia.api.riotgames.com 更換成 **sea**.api.riotgames.com 
 ```
-https://sea.api.riotgames.com/lol/match/v5/matches/by-puuid/{{puuid}}}/ids?start=0&count=
+https://sea.api.riotgames.com/lol/match/v5/matches/by-puuid/{{puuid}}}/ids?start=0&count=10
 ```
 
 ![[Ulysses/成長筆記本/資料工程師/附件圖片檔/Pasted image 20250705215341.png]]
 ![[Ulysses/成長筆記本/資料工程師/附件圖片檔/Pasted image 20250705223330.png]]
-
 ![[Ulysses/成長筆記本/資料工程師/附件圖片檔/Pasted image 20250706200007.png]]
+
 
 | 地區/伺服器   | Routing Region（用於 Match API） |
 | -------- | ---------------------------- |
@@ -52,7 +52,6 @@ https://sea.api.riotgames.com/lol/match/v5/matches/by-puuid/{{puuid}}}/ids?start
 
 Simple :
 ```
-GET
 https://sea.api.riotgames.com/lol/match/v5/matches/{matchId}
 ```
 - {matchId} : `遊戲對戰編號`
@@ -65,7 +64,37 @@ https://sea.api.riotgames.com/lol/match/v5/matches/TW2_316231903
 
 ---
 
+# 📦 Riot 官方版本查詢（找出當前版本）
 
+GET
+```
+https://ddragon.leagueoflegends.com/api/versions.json
+```
+
+
+# 📦 Riot 資料 JSON
+
+https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/champion.json
+https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/summoner.json
+https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/item.json
+
+從 Riot Match API 中取得的每場資料裡，這些都可以用 Riot 提供的 JSON 靜態資料對應：
+- `championName`: 英雄英文名稱（直接拼在 `.../champion/{name}.png`）    
+- `summoner1Id` / `summoner2Id`: 對應 spell ID，你要用 spell.json 查名稱    
+- `item0` ~ `item6`: 直接就是 item 的整數 ID    
+- `perks`: 符文需用 perks.json 解析
+
+
+
+|你想顯示的內容|資料來源|圖片位置|
+|---|---|---|
+|英雄頭像|Match API 中的 `championName`|`/img/champion/{name}.png`|
+|技能圖示|`summoner1Id` / `summoner2Id`|`/img/spell/{spellName}.png`（需轉換）|
+|道具圖示|`item0 ~ item6`|`/img/item/{itemId}.png`|
+|符文圖示|`perks` 欄位解析後對應|`/img/perk-images/...`|
+
+
+---
 ## ✅ 開發總目標
 
 打造一個簡易網頁平台，能自動查詢你朋友（6～10人）的戰績，並整合在一個畫面上查看。
@@ -76,22 +105,23 @@ https://sea.api.riotgames.com/lol/match/v5/matches/TW2_316231903
 
 ### 🟧 第 1 階段：基礎資料準備與設計
 
-|步驟|項目|教學說明|
-|---|---|---|
-|✅ 1|收集所有團員的 `gameName + tagLine` → 轉換為 `puuid`|使用 Riot API `/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}`|
-|✅ 2|建立 puuid 名單（JSON）|可放在本地 JSON 檔或資料庫，格式如下：`[{ "name": "深邃紅月", "tag": "tw2", "puuid": "xxxx" }, ...]`|
-|✅ 3|申請 Riot 開發者 API 金鑰|[https://developer.riotgames.com/](https://developer.riotgames.com/)每日更新一次 Key|
+| 步驟  | 項目                                         | 教學說明                                                                             |
+| --- | ------------------------------------------ | -------------------------------------------------------------------------------- |
+| ✅ 1 | 收集所有團員的 `gameName + tagLine` → 轉換為 `puuid` | 使用 Riot API `/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}`          |
+| ✅ 2 | 建立 puuid 名單（JSON）                          | 可放在本地 JSON 檔或資料庫，格式如下：`[{ "name": "深邃紅月", "tag": "tw2", "puuid": "xxxx" }, ...]` |
+| ✅ 3 | 申請 Riot 開發者 API 金鑰                         | [https://developer.riotgames.com/](https://developer.riotgames.com/)每日更新一次 Key   |
+|     |                                            |                                                                                  |
 
 ---
 
 ### 🟨 第 2 階段：後端 API 建構（C# ASP.NET 建議）
 
-|步驟|項目|教學說明|
-|---|---|---|
-|🔧 4|建立 ASP.NET Web API 專案（.NET 8）|建議使用 `dotnet new webapi` 或 Visual Studio 建立|
-|🔧 5|建立服務 `RiotApiService`，封裝 Riot API 呼叫邏輯|3 層邏輯：① 查 puuid → matchIds② 查 matchId → match info③ 過濾出自己戰績|
-|🔧 6|建立 Controller `/api/match/{puuid}` → 回傳該玩家最近 10 場資料|使用 `HttpClient` 進行請求，格式化回傳 JSON|
-|🔧 7|建立一個 `/api/team` API → 迴圈查詢所有團員資料|可以並行查詢 6～10 個 puuid 的比賽結果|
+| 步驟   | 項目                                                  | 教學說明                                                        |
+| ---- | --------------------------------------------------- | ----------------------------------------------------------- |
+| 🔧 4 | 建立 ASP.NET Web API 專案（.NET 8）                       | 建議使用 `dotnet new webapi` 或 Visual Studio 建立                 |
+| 🔧 5 | 建立服務 `RiotApiService`，封裝 Riot API 呼叫邏輯              | 3 層邏輯：① 查 puuid → matchIds② 查 matchId → match info③ 過濾出自己戰績 |
+| 🔧 6 | 建立 Controller `/api/match/{puuid}` → 回傳該玩家最近 10 場資料 | 使用 `HttpClient` 進行請求，格式化回傳 JSON                             |
+| 🔧 7 | 建立一個 `/api/team` API → 迴圈查詢所有團員資料                   | 可以並行查詢 6～10 個 puuid 的比賽結果                                   |
 
 ---
 
@@ -235,5 +265,4 @@ https://sea.api.riotgames.com/lol/match/v5/matches/TW2_316231903
 ---
 
 如需實際起手專案範本、API 申請、或開發流程規劃，我可以幫你建立起步架構。你也可以指定 Riot API、後端語言等再進一步細化。
-
 讓我知道你想從哪個模組先學，我可以給你[入門教學](https://chatgpt.com/c/f)、[專案架構模板](https://chatgpt.com/c/f)、或[Riot API 快速入門](https://chatgpt.com/c/f)。
