@@ -1,3 +1,4 @@
+
 ## Ignore build results
 bin/
 obj/
@@ -59,7 +60,10 @@ coverage/
 *.coverage
 
 ## Optional: ignore swagger auto-gen
-swagger/
+swagger/ appsettings.Development.json appsettings.json 
 
-appsettings.Development.json
-appsettings.json
+## 個人檔案
+Ulysses 
+Dev文件
+**/Pasted*
+.obsidian/

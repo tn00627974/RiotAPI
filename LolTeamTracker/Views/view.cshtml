@@ -1,0 +1,12 @@
+<div style="display: flex; flex-wrap: wrap;">
+  <script>
+    const champions = ["Aatrox", "Ahri", "Akali", "Alistar", "Amumu", "Anivia", "Annie", "Ashe"]; <!-- Add more champions as needed -->
+    const version = "15.13.1";
+    champions.forEach(c => {
+      document.write(`<div style="margin: 5px; text-align: center;">
+        <img src="https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${c}.png" width="64">
+        <div>${c}</div>
+      </div>`);
+    });
+  </script>
+</div>
