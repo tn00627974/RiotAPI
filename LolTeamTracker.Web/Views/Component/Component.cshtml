@@ -1,3 +1,7 @@
+@{
+    Layout = null; // 若不使用共用 Layout，可設為 null
+}
+
 <!-- component -->
 <!DOCTYPE html>
 <html lang="en">
@@ -8,12 +12,12 @@
     <meta name="description" content="">
 
     <!-- Tailwind -->
-     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- <link href="https://unpkg.com/tailwindcss/dist/tailwind.min.css" rel="stylesheet"> -->
+    <!--<link href="https://unpkg.com/tailwindcss/dist/tailwind.min.css" rel="stylesheet">-->
+    <link href="https://fonts.googleapis.com/css?family=Karla:400,700&display=swap" rel="stylesheet">
+
     <style>
-        @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
-
         .font-family-karla {
             font-family: karla;
         }
@@ -37,17 +41,17 @@
                 <div class="flex flex-col mb-4">
                     <label for="email" class="text-lg">Email</label>
                     <input type="email" id="email" placeholder="your@email.com"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:shadow-outline">
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
 
                 <div class="flex flex-col mb-6">
                     <label for="password" class="text-lg">Password</label>
                     <input type="password" id="password" placeholder="Password"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:shadow-outline">
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
 
                 <input type="submit" value="Log In"
-                    class="bg-black text-white font-bold text-lg hover:bg-gray-700 p-2 rounded">
+                       class="bg-black text-white font-bold text-lg hover:bg-gray-700 p-2 rounded">
             </form>
 
             <div class="text-center pt-6">

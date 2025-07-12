@@ -1,6 +1,0 @@
-@WebApplication1_HostAddress = http://localhost:5088
-
-GET {{WebApplication1_HostAddress}}/api/Match?gameName=²`Âã¬õ¤ë&tagLine=tw2
-Accept: application/json
-
-###

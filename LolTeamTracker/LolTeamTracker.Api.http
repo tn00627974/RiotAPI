@@ -1,0 +1,6 @@
+@LolTeamTracker.Api.Api_HostAddress = http://localhost:5088
+
+GET {{LolTeamTracker.Api.Api_HostAddress}}/api/Match?gameName=²`Âã¬õ¤ë&tagLine=tw2
+Accept: application/json
+
+###

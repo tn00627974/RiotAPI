@@ -1,4 +1,4 @@
-﻿namespace LolTeamTracker.Controllers
+﻿namespace LolTeamTracker.Api.Models
 {
     public class Champion
     {

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace WebApplication1
+namespace LolTeamTracker.Api
 {
     public class RiotApiService
     {
@@ -13,17 +13,30 @@ namespace WebApplication1
         {
             _httpClient = httpClient;
             _config = config;
-            _apiKey = _config["RiotApi:ApiKey"];
-            _baseUrl = _config["RiotApi:RegionBaseUrl"];
-            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey);
+            _apiKey = _config["RiotApi:ApiKey"]; // 你的API KEY
+            _baseUrl = _config["RiotApi:RegionBaseUrl"]; // https://sea.api.riotgames.com 網址
+            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey); 
         }
 
         // 用 Riot ID 查 puuid
         public async Task<string> GetPuuidAsync(string gameName, string tagLine)
         {
-            var url = $"https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}";
-            var res = await _httpClient.GetFromJsonAsync<JsonElement>(url);
-            return res.GetProperty("puuid").GetString();
+            try
+            {
+                var url = $"https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}";
+                var res = await _httpClient.GetFromJsonAsync<JsonElement>(url);
+                return res.GetProperty("puuid").GetString();
+            }
+            //catch (HttpRequestException ex)
+            //{
+            //    //return $"API Error : {ex.StatusCode} - {ex.Message}";
+            //    //return "Error: PUUID not found in response";
+            //}
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
         }
 
         // 用 puuid 查比賽列表 count預設為10,最多100上限 ( API限制 )
@@ -34,10 +47,10 @@ namespace WebApplication1
         }
 
 
-        //用 puuid 查比賽列表細節
+        //用 matchId 查比賽列表細節
         public async Task<MatchSummary?> GetMatchSummaryAsync(string matchId, string puuid, string gameName, string tag)
         {
-            var url = $"{_baseUrl}/lol/match/v5/matches/{matchId}";
+            var url = $"{_baseUrl}/lol/match/v5/matches/{matchId}"; // {matchId} : 遊戲對戰編號
             var data = await _httpClient.GetFromJsonAsync<JsonElement>(url);
             var participant = data.GetProperty("info").GetProperty("participants")
                                   .EnumerateArray()

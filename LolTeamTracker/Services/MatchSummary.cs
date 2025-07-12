@@ -1,4 +1,4 @@
-﻿namespace WebApplication1
+﻿namespace LolTeamTracker.Api
 {
     public class MatchSummary
     {

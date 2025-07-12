@@ -1,4 +1,4 @@
-﻿namespace LolTeamTracker.Services
+﻿namespace LolTeamTracker.Api.Services
 {
     public class RiotDataDownloader
     {

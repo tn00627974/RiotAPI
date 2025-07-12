@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApplication1.Controllers;
+namespace LolTeamTracker.Api.Controllers;
 
 [ApiController]
 //[Route("[controller]")]
@@ -14,6 +14,13 @@ public class MatchController : ControllerBase
         _riot = riot;
     }
 
+
+    /// <summary>
+    /// 取得指定玩家的比賽列表 : Simple > {gameName}:Faker {tagLine}:TW2
+    /// </summary>
+    /// <param name="gameName"></param>
+    /// <param name="tagLine"></param>
+    /// <returns></returns>
     [HttpGet("{gameName}/{tagLine}")]
     public async Task<IActionResult> GetMatchList(string gameName, string tagLine)
     {
@@ -31,7 +38,8 @@ public class MatchController : ControllerBase
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"讀取比賽 {matchId} 失敗：{ex.Message}");
+                return BadRequest($"讀取比賽 {matchId} 失敗：{ex.Message}");
+                    
             }
         }
         return this.Ok(new
