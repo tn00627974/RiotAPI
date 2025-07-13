@@ -2,12 +2,14 @@
 using LolTeamTracker.Api.Services;
 using Microsoft.OpenApi.Models; 
 using System.Reflection;
+using Westwind.AspNetCore.LiveReload;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddLiveReload();
 builder.Services.AddHttpClient<RiotApiService>(); // 註冊 RiotApiService 以便在 MatchController 中使用
 builder.Services.AddHttpClient<RiotDataDownloader>(); // 註冊 RiotDataDownloader 以便在 MatchController 中使用
 
@@ -21,7 +23,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "20250712v1",
         Title = "RIOT API",
-        Description = "An ASP.NET Core Web API for LolTeamTracker",
+        Description = "An ASP.NET Core Web API for LolTeamTracker", 
         TermsOfService = new Uri("https://example.com/terms"),
         Contact = new OpenApiContact 
         {
@@ -46,9 +48,14 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseLiveReload(); // 加這行
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseDeveloperExceptionPage();
+    app.UseReDoc(options =>
+    {
+        options.RoutePrefix = "redoc"; // 最終網址 http://localhost:xxxx/redoc
+    });
+    app.UseDeveloperExceptionPage(); // 顯示詳細錯誤
 }
 
 app.UseHttpsRedirection();

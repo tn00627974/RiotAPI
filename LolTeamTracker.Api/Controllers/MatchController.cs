@@ -14,17 +14,20 @@ public class MatchController : ControllerBase
         _riot = riot;
     }
 
-
     /// <summary>
-    /// 取得指定玩家的比賽列表 : Simple > {gameName}:Faker {tagLine}:TW2
+    /// 取得指定玩家的比賽列表
     /// </summary>
-    /// <param name="gameName"></param>
-    /// <param name="tagLine"></param>
+    /// <remarks>
+    /// 範例：
+    /// GET /api/match/Faker/TW2
+    /// </remarks>
+    /// <param name="gameName">召喚師名稱，例如Faker</param>
+    /// <param name="tagLine">地區代碼，例如 TW2</param>
     /// <returns></returns>
     [HttpGet("{gameName}/{tagLine}")]
     public async Task<IActionResult> GetMatchList(string gameName, string tagLine)
     {
-        var puuid = await _riot.GetPuuidAsync(gameName, tagLine);
+        var puuid = await _riot.GetPuuidAsync(gameName, tagLine); 
         var matchIds = await _riot.GetMatchIdsAsync(puuid);
         var result = new List<MatchSummary>();
 
@@ -48,5 +51,6 @@ public class MatchController : ControllerBase
             data = result
         });
     }
+
 
 }
