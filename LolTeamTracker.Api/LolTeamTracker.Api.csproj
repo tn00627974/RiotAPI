@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Static\modern-login-template\" />
     <Folder Include="Views\" />
   </ItemGroup>
 

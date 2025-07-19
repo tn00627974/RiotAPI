@@ -71,7 +71,6 @@ GET
 https://ddragon.leagueoflegends.com/api/versions.json
 ```
 
-
 # 📦 Riot 資料 JSON
 
 https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/champion.json
@@ -84,8 +83,6 @@ https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/item.json
 - `item0` ~ `item6`: 直接就是 item 的整數 ID    
 - `perks`: 符文需用 perks.json 解析
 
-
-
 |你想顯示的內容|資料來源|圖片位置|
 |---|---|---|
 |英雄頭像|Match API 中的 `championName`|`/img/champion/{name}.png`|
@@ -93,6 +90,55 @@ https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/item.json
 |道具圖示|`item0 ~ item6`|`/img/item/{itemId}.png`|
 |符文圖示|`perks` 欄位解析後對應|`/img/perk-images/...`|
 
+## 🛠️ 使用 Postman 直接撈取最新版本號 
+
+### 步驟如下：
+
+### 🔹 1. 建立第一個請求：取得版本清單
+
+- 方法：`GET`
+- URL：`https://ddragon.leagueoflegends.com/api/versions.json
+
+### 🔹 2. 在此請求中加入 Pre-request Script（如下）
+
+```javascript
+// 這段程式碼放在 Pre-request Script 中會在請求前執行
+pm.sendRequest("https://ddragon.leagueoflegends.com/api/versions.json", function (err, res) {
+    if (!err) {
+        const versionsArray = res.json();      // 把 response 轉成陣列
+        const latestVersion = versionsArray[0]; // 取得最新版本
+        pm.environment.set("versions", latestVersion); // 設定成環境變數
+        console.log("最新版本為:", latestVersion);
+    } else {
+        console.error("錯誤取得版本:", err);
+    }
+});
+```
+
+### 🔹 3. 建立後續請求（使用該版本）
+
+- 方法：`GET`
+- URL：
+    
+```
+`https://ddragon.leagueoflegends.com/cdn/{{versions}}/data/zh_TW/champion.json`
+```
+
+其他請求依樣畫葫蘆，把 `{{versions}}` 當作 URL 的一部分使用即可。
+
+### 🔹4. 其餘 JSON API : 套入環境變數 {{versions}}
+
+```javascript
+https://ddragon.leagueoflegends.com/cdn/{{versions}}/data/zh_TW/champion.json
+https://ddragon.leagueoflegends.com/cdn/{{versions}}/data/zh_TW/summoner.json
+https://ddragon.leagueoflegends.com/cdn/{{versions}}/data/zh_TW/item.json
+```
+
+## 📌 備註：
+
+- 你要先執行一次「版本取得」的 request，這樣 `versions` 變數才會被設定。    
+- 請確認使用的是 **Environment Variables**（環境變數），而不是 Global 或 Collection 變數。    
+- 你也可以改成用 `Collection Pre-request Script`，讓其他請求都共用。
 
 ---
 ## ✅ 開發總目標
@@ -127,10 +173,10 @@ https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/item.json
 
 ### 🟩 第 3 階段：快取與排程（選用）
 
-|步驟|項目|教學說明|
-|---|---|---|
-|⏱️ 8|將查詢結果快取至記憶體 / Redis / JSON 檔案|避免過度打 Riot API，可 15~30 分鐘更新一次|
-|⏱️ 9|加入自動更新排程（BackgroundService 或 Hangfire）|定時更新所有 puuid 的比賽資料|
+| 步驟   | 項目                                     | 教學說明                          |
+| ---- | -------------------------------------- | ----------------------------- |
+| ⏱️ 8 | 將查詢結果快取至記憶體 / Redis / JSON 檔案          | 避免過度打 Riot API，可 15~30 分鐘更新一次 |
+| ⏱️ 9 | 加入自動更新排程（BackgroundService 或 Hangfire） | 定時更新所有 puuid 的比賽資料            |
 
 ---
 
@@ -146,11 +192,11 @@ https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/item.json
 
 ### 🟪 第 5 階段：部署與優化（可選）
 
-|步驟|項目|教學說明|
-|---|---|---|
-|🚀 13|本地測試無誤後，部署到 VPS / 雲端|可用 Windows Server + IIS、或 Azure Web App|
-|🔐 14|加入錯誤處理與 API 過載保護|若有速率限制，需加入 retry、封鎖機制等|
-|📈 15|可加上資料分析（例如每人勝率、MVP場次等）|額外統計功能：勝場率、平均 KDA、最常玩英雄等|
+| 步驟    | 項目                     | 教學說明                                    |
+| ----- | ---------------------- | --------------------------------------- |
+| 🚀 13 | 本地測試無誤後，部署到 VPS / 雲端   | 可用 Windows Server + IIS、或 Azure Web App |
+| 🔐 14 | 加入錯誤處理與 API 過載保護       | 若有速率限制，需加入 retry、封鎖機制等                  |
+| 📈 15 | 可加上資料分析（例如每人勝率、MVP場次等） | 額外統計功能：勝場率、平均 KDA、最常玩英雄等                |
 
 ---
 
@@ -226,11 +272,11 @@ https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/item.json
 
 ### 🛢️ 五、資料庫設計與分析
 
-|項目|技術學習|重點|
-|---|---|---|
-|資料庫選型|PostgreSQL / SQL Server|支援 JSON/地理資料索引者佳|
-|資料表設計|使用正規化 / 指標儲存 / Index 優化|分析用欄位要額外設計（KDA、WinRate）|
-|資料倉儲（可選）|DuckDB / ClickHouse / BigQuery|做高效查詢用（可延伸）|
+| 項目       | 技術學習                           | 重點                      |
+| -------- | ------------------------------ | ----------------------- |
+| 資料庫選型    | PostgreSQL / SQL Server        | 支援 JSON/地理資料索引者佳        |
+| 資料表設計    | 使用正規化 / 指標儲存 / Index 優化        | 分析用欄位要額外設計（KDA、WinRate） |
+| 資料倉儲（可選） | DuckDB / ClickHouse / BigQuery | 做高效查詢用（可延伸）             |
 
 ---
 
@@ -246,12 +292,12 @@ https://ddragon.leagueoflegends.com/cdn/15.13.1/data/zh_TW/item.json
 
 ### ☁️ 七、部署與運維
 
-|項目|技術學習|推薦工具|
-|---|---|---|
-|雲端部署|Vercel / Netlify（前端）、Render / Fly.io / Linode（後端）|小專案可用免費層|
-|Docker 容器化|Docker + Docker Compose|[Docker 官方指南](https://chatgpt.com/c/f)|
-|CI/CD|GitHub Actions / Azure DevOps|自動部署前後端|
-|監控|Uptime Kuma / Grafana / Prometheus|可簡單整合異常通知|
+| 項目         | 技術學習                                              | 推薦工具                                   |
+| ---------- | ------------------------------------------------- | -------------------------------------- |
+| 雲端部署       | Vercel / Netlify（前端）、Render / Fly.io / Linode（後端） | 小專案可用免費層                               |
+| Docker 容器化 | Docker + Docker Compose                           | [Docker 官方指南](https://chatgpt.com/c/f) |
+| CI/CD      | GitHub Actions / Azure DevOps                     | 自動部署前後端                                |
+| 監控         | Uptime Kuma / Grafana / Prometheus                | 可簡單整合異常通知                              |
 
 ---
 ### 🧪 八、推薦開發順序（學習實作建議）

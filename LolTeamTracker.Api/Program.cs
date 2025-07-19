@@ -1,6 +1,6 @@
-﻿using LolTeamTracker.Api;
-using LolTeamTracker.Api.Services;
-using Microsoft.OpenApi.Models; 
+﻿using LolTeamTracker.Api.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Westwind.AspNetCore.LiveReload;
 
@@ -11,7 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddLiveReload();
 builder.Services.AddHttpClient<RiotApiService>(); // 註冊 RiotApiService 以便在 MatchController 中使用
-builder.Services.AddHttpClient<RiotDataDownloader>(); // 註冊 RiotDataDownloader 以便在 MatchController 中使用
+builder.Services.AddScoped<RiotDataDownloader>(provider =>
+    new RiotDataDownloader(
+        provider.GetRequiredService<IHttpClientFactory>(),
+        provider.GetRequiredService<IWebHostEnvironment>()
+    ));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 // Swagger 中介軟體
@@ -57,6 +61,8 @@ if (app.Environment.IsDevelopment())
     });
     app.UseDeveloperExceptionPage(); // 顯示詳細錯誤
 }
+
+app.UseStaticFiles(); 
 
 app.UseHttpsRedirection();
 

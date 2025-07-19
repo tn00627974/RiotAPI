@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Dev文件.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Dev文件"
+              "title": "README"
             }
           }
         ]
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Dev文件.md",
+                "file": "README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Dev文件 的大綱"
+              "title": "README 的大綱"
             }
           }
         ],
@@ -170,26 +170,26 @@
   },
   "active": "ea4e756311860dfc",
   "lastOpenFiles": [
+    "LolTeamTracker.Api/bin/Debug/net8.0/Data/Static/champion.json",
+    "LolTeamTracker.Api/Data/Static/champion.json",
+    "LolTeamTracker.Api/bin/Debug/net8.0/Data/champion.json",
+    "LolTeamTracker.Api/Data/champion.json",
+    "LolTeamTracker.Api/bin/Debug/net8.0/appsettings.Development.json",
+    "LolTeamTracker.Api/obj/project.nuget.cache",
+    "LolTeamTracker.Web/obj/project.nuget.cache",
+    "LolTeamTracker.Api/Models/MatchSummary.cs",
+    "LolTeamTracker.Api/Services/RiotApiService.cs",
+    "Ulysses/GitHub專案/RiotServer/Riot API Key.md",
+    "Dev文件.md",
     "LolTeamTracker/Controllers/ChampionRoot.cs",
     "LolTeamTracker/Controllers/Champion.cs",
-    "LolTeamTracker/Views/component - 複製.html",
-    "LolTeamTracker/Views/component.html",
     "Pasted image 20250709223824.png",
     "Pasted image 20250709223801.png",
     "Pasted image 20250709223411.png",
     "Pasted image 20250709223335.png",
     "Pasted image 20250709223325.png",
     "Pasted image 20250709223333.png",
-    "Dev文件.md",
     "README.md",
-    "WebApplication1/Views/view.cshtml",
-    "WebApplication1/Views/view.cshtml.txt",
-    "WebApplication1/Views/view.inhtml.txt",
-    "WebApplication1/Views/新文字文件.txt",
-    "WebApplication1/Views/view.inhtml",
-    "WebApplication1/Views/新增資料夾",
-    "WebApplication1/Services/RiotDataDownloader.cs",
-    "Ulysses/GitHub專案/RiotServer/Riot API Key.md",
     "WebApplication1/Data/Static/images/1.jpg",
     "WebApplication1/Data/Static/modern-login-template/1.jpg"
   ]

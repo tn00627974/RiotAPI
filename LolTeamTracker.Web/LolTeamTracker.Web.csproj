@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Component\component1.cshtml" />
     <Content Remove="wwwroot\images\1.jpg" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\Component\component1.cshtml" />
     <None Include="wwwroot\images\1.jpg" />
   </ItemGroup>
 

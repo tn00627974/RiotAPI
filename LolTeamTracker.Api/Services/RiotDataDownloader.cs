@@ -3,15 +3,21 @@
     public class RiotDataDownloader
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IWebHostEnvironment _env;
+        //private readonly HttpClient _httpClient;
 
-        public RiotDataDownloader(IHttpClientFactory httpClientFactory)
+
+        public RiotDataDownloader(IHttpClientFactory httpClientFactory , IWebHostEnvironment env)
         {
+            //_httpClient = httpClientFactory.CreateClient(); // 使用命名客戶端也可
             _httpClientFactory = httpClientFactory;
+            _env = env; 
         }
 
         // 下載 champion.json 的 C# 程式 => 放在 Static 資料夾
-        public async Task DownloadLatestChampionJsonAsync(string savePath)
+        public async Task DownloadLatestChampionJsonAsync()
         {
+            string savePath = Path.Combine(_env.ContentRootPath, "Data", "Static", "champion.json");
             var client = _httpClientFactory.CreateClient();
 
             // 取得版本

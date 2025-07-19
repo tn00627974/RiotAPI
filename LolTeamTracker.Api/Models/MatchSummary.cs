@@ -1,4 +1,4 @@
-﻿namespace LolTeamTracker.Api
+﻿namespace LolTeamTracker.Api.Models
 {
     public class MatchSummary
     {

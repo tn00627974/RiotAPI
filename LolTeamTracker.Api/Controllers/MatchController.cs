@@ -1,3 +1,5 @@
+using LolTeamTracker.Api.Models;
+using LolTeamTracker.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LolTeamTracker.Api.Controllers;
@@ -9,7 +11,7 @@ public class MatchController : ControllerBase
 {
     private readonly RiotApiService _riot;
 
-    public MatchController(RiotApiService riot)
+    public MatchController (RiotApiService riot)
     {
         _riot = riot;
     }
