@@ -76,7 +76,7 @@ namespace LolTeamTracker.Api.Services
                                   .EnumerateArray()
                                   .FirstOrDefault(p => p.GetProperty("puuid").GetString() == puuid);
 
-            if (participant.ValueKind == JsonValueKind.Undefined)
+            if (participant.ValueKind == JsonValueKind.Undefined) // 如果找不到對應的參與者
                 return null;
 
             return new MatchSummary

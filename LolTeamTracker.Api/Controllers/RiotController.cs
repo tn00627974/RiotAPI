@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System;
 using LolTeamTracker.Api.Services;
 using System.Net.Http;
+using System.Xml.Linq;
 
 namespace LolTeamTracker.Api.Controllers
 {
@@ -16,8 +17,9 @@ namespace LolTeamTracker.Api.Controllers
         private readonly RiotDataDownloader _riotDataDownloader;
         private readonly IWebHostEnvironment _env;
 
-        public RiotController(RiotDataDownloader riotDataDownloader, IWebHostEnvironment env)
+        public RiotController(RiotApiService riot ,RiotDataDownloader riotDataDownloader, IWebHostEnvironment env)
         {
+            _riot = riot;
             _riotDataDownloader = riotDataDownloader;
             _env = env;
         }
@@ -65,16 +67,19 @@ namespace LolTeamTracker.Api.Controllers
 
 
         /// <summary>
-        /// 下載最新的 champion.json 資料
+        /// 下載所有最新的json資料
         /// </summary>
-        [HttpGet("download")]
+        [HttpGet("download-all-json")]
         public async Task<IActionResult> DownloadChampionData()
         {
             try
-            {
-                //string savePath = _env.ContentRootPath; // 專案根目錄
+            {               
                 await _riotDataDownloader.DownloadLatestChampionJsonAsync();
-                return Ok(new { message = "下載成功", path = "Data/Static/champion.json" });
+                await _riotDataDownloader.DownloadLatestItemJsonAsync();
+                await _riotDataDownloader.DownloadLatestSummonerJsonAsync();
+                await _riotDataDownloader.DownloadLatestRunesReforgedJsonAsync();
+
+                return Ok(new { message = "下載成功" });
             }
             catch (Exception ex)
             {
