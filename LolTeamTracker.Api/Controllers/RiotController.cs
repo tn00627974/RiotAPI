@@ -37,6 +37,13 @@ namespace LolTeamTracker.Api.Controllers
             return Ok(puuid);
         }
 
+        [HttpGet("gameName")]
+        public async Task<IActionResult> GetGameName(string puuid)
+        {
+            var playerInfo = await _riot.GetGameNameAsync(puuid);
+            return Ok(playerInfo);
+        }
+
         /// <summary>
         /// 查詢單場詳細資訊
         /// </summary>
@@ -64,7 +71,6 @@ namespace LolTeamTracker.Api.Controllers
             var matchId = await _riot.GetMatchIdsAsync(puuid, count);
             return Ok(matchId);
         }
-
 
         /// <summary>
         /// 下載所有最新的json資料

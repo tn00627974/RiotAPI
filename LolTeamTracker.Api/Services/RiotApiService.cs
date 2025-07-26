@@ -23,7 +23,12 @@ namespace LolTeamTracker.Api.Services
             _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey); 
         }
 
-        // 用 Riot ID 查 puuid
+        /// <summary>
+        /// 用 Riot ID 查 puuid
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <param name="tagLine"></param>
+        /// <returns></returns>
         public async Task<string> GetPuuidAsync(string gameName, string tagLine)
         {
             try
@@ -42,7 +47,40 @@ namespace LolTeamTracker.Api.Services
             }
         }
 
-        // 查詢單場詳細資訊
+
+        /// <summary>
+        /// 用 puuid 查遊戲名稱 (GameName) 和標籤 (TagLine)
+        /// </summary>
+        /// <param name="puuid">puuid</param>
+        /// <returns></returns>
+        public async Task<string> GetGameNameAsync(string puuid)
+        {
+            try
+            {
+                var url = $"https://asia.api.riotgames.com/riot/account/v1/accounts/by-puuid/{puuid}";
+                var res = await _httpClient.GetFromJsonAsync<JsonElement>(url);
+                if (res.ValueKind == JsonValueKind.Undefined)
+                    return "No data found";
+                return res.GetProperty("gameName").GetString()+ res.GetProperty("tagLine").GetString();
+            }
+            catch (HttpRequestException ex)
+            {
+                return $"API Error : {ex.StatusCode} - {ex.Message}";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// 查詢單場詳細資訊
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <returns></returns>
         public async Task<string> GetMatchSummary(string matchId)
         {
             var client = _httpClientFactory.CreateClient();
@@ -56,8 +94,14 @@ namespace LolTeamTracker.Api.Services
             return json;
         }
 
-        // 用 puuid 查比賽列表 count預設為10,最多100上限 ( API限制 )
-        public async Task<List<string>> GetMatchIdsAsync(string puuid,int start = 0,int count = 10) 
+        /// <summary>
+        /// 用 puuid 查比賽列表 count預設為10,最多100上限 ( API限制 )
+        /// </summary>
+        /// <param name="puuid"></param>
+        /// <param name="start"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public async Task<List<string>> GetMatchIdsAsync(string puuid,int start=0,int count=10) 
         {
             var url = $"{_baseUrl}/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}";
             return await _httpClient.GetFromJsonAsync<List<string>>(url);
@@ -67,7 +111,14 @@ namespace LolTeamTracker.Api.Services
          ---------------------- match ----------------------         
          */
 
-        //用 matchId 查比賽列表細節
+        /// <summary>
+        /// 用 matchId 查比賽列表細節
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <param name="puuid"></param>
+        /// <param name="gameName"></param>
+        /// <param name="tagLine"></param>
+        /// <returns></returns>
         public async Task<MatchSummary?> GetMatchSummaryAsync(string matchId, string puuid, string gameName, string tagLine)
         {
             var url = $"{_baseUrl}/lol/match/v5/matches/{matchId}"; // {matchId} : 遊戲對戰編號

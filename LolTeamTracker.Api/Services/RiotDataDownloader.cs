@@ -33,28 +33,40 @@
             return versions!.First(); // 取得最新版本(不會有 null)
         }
 
-        // champion.json 英雄資料
+        /// <summary>
+        /// champion.json 英雄資料
+        /// </summary>
+        /// <returns></returns>
         public async Task DownloadLatestChampionJsonAsync()
         {
             var version = await GetLatestVersionAsync();
             await DownloadDataFileAsync(version, "champion.json");
         }
 
-        // item.json 物品資料
+        /// <summary>
+        /// item.json 物品資料
+        /// </summary>
+        /// <returns></returns>
         public async Task DownloadLatestItemJsonAsync()
         {
             var version = await GetLatestVersionAsync();
             await DownloadDataFileAsync(version, "item.json");
         }
 
-        // summoner.json 召喚師技能資料
+        /// <summary>
+        /// summoner.json 召喚師技能資料
+        /// </summary>
+        /// <returns></returns>
         public async Task DownloadLatestSummonerJsonAsync()
         {
             var version = await GetLatestVersionAsync();
             await DownloadDataFileAsync(version, "summoner.json");
         }
 
-        // runesReforged.json 符文資料
+        /// <summary>
+        /// runesReforged.json 符文資料
+        /// </summary>
+        /// <returns></returns>
         public async Task DownloadLatestRunesReforgedJsonAsync()
         {
             var version = await GetLatestVersionAsync();

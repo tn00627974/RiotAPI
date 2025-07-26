@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Views\Component\component1.cshtml" />
     <None Include="wwwroot\images\1.jpg" />
   </ItemGroup>
 
