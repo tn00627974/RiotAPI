@@ -5,15 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace LolTeamTracker.Api.Controllers;
 
 [ApiController]
-//[Route("[controller]")]
-[Route("api/match")]
+[Route("api/[controller]")]
 public class MatchController : ControllerBase
 {
     private readonly RiotApiService _riot;
+    private readonly MatchAnalyzer _analyzer;
 
-    public MatchController (RiotApiService riot)
+
+    public MatchController (RiotApiService riot,MatchAnalyzer analyzer)
     {
         _riot = riot;
+        _analyzer = analyzer;
     }
 
     /// <summary>
@@ -59,6 +61,24 @@ public class MatchController : ControllerBase
             data = result
         });
     }
+    /// <summary>
+    /// 測試呼叫 RunAsync()，進行一次分析流程
+    /// </summary>
+    [HttpGet("test-run")]
+    public async Task<IActionResult> TestRunAsync()
+    {
+        try
+        {
+            await _analyzer.RunAsync();
+            return Ok("分析完成");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"錯誤：{ex.Message}");
+        }
+    }
+
+
 
 
 }

@@ -25,19 +25,24 @@ namespace LolTeamTracker.Api.Controllers
         }
 
         /// <summary>
-        /// 查該玩家的 puuid
+        /// 根據遊戲名稱和標籤獲取puuid
         /// </summary>
         /// <param name="gameName">遊戲名稱</param>
-        /// <param name="tagLine"> #標籤 </param>
+        /// <param name="tagLine">#標籤</param>
         /// <returns></returns>
-        [HttpGet("puuid")]
+        [HttpGet("players/puuid")]
         public async Task<IActionResult> GetPuuid(string gameName, string tagLine)
         {
             var puuid = await _riot.GetPuuidAsync(gameName, tagLine);
             return Ok(puuid);
         }
 
-        [HttpGet("gameName")]
+        /// <summary>
+        /// 根據玩家的puuid獲取遊戲名稱和標籤
+        /// </summary>
+        /// <param name="puuid"></param>
+        /// <returns></returns>
+        [HttpGet("players/{puuid}")]
         public async Task<IActionResult> GetGameName(string puuid)
         {
             var playerInfo = await _riot.GetGameNameAsync(puuid);

@@ -10,7 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddLiveReload();
-builder.Services.AddHttpClient<RiotApiService>(); // 註冊 RiotApiService 以便在 MatchController 中使用
+builder.Services.AddScoped<MatchAnalyzer>(); // 註冊 MatchAnalyzer 
+builder.Services.AddHttpClient<RiotApiService>(); // 註冊 RiotApiService 
 builder.Services.AddScoped<RiotDataDownloader>(provider =>
     new RiotDataDownloader(
         provider.GetRequiredService<IHttpClientFactory>(),
@@ -47,7 +48,15 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
+
 var app = builder.Build();
+
+// 測試：呼叫 RunAsync()
+//using (var scope = app.Services.CreateScope())
+//{
+//    var analyzer = scope.ServiceProvider.GetRequiredService<MatchAnalyzer>();
+//    await analyzer.RunAsync(); // 執行分析
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

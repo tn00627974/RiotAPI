@@ -10,21 +10,22 @@ namespace LolTeamTracker.Api.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _apiKey;
         private readonly string _baseUrl;
-        private readonly IHttpClientFactory _httpClientFactory; 
 
-        public RiotApiService(HttpClient httpClient, IConfiguration config)
+        public RiotApiService(HttpClient httpClient, IConfiguration config, IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
-            _config = config;
-            _apiKey = _config["RiotApi:ApiKey"]; // 你的API KEY
-            _baseUrl = _config["RiotApi:RegionBaseUrl"]; // https://sea.api.riotgames.com 網址
-            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey); 
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _apiKey = _config["RiotApi:ApiKey"] ?? throw new InvalidOperationException("RiotApi:ApiKey is not configured.");
+            _baseUrl = _config["RiotApi:RegionBaseUrl"] ?? throw new InvalidOperationException("RiotApi:RegionBaseUrl is not configured.");
+            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey);
         }
 
         /// <summary>
-        /// 用 Riot ID 查 puuid
+        /// 用遊戲名稱 {GameName} 和標籤 {TagLine} 查詢 puuid
         /// </summary>
         /// <param name="gameName"></param>
         /// <param name="tagLine"></param>
@@ -46,7 +47,6 @@ namespace LolTeamTracker.Api.Services
                 return ex.Message;
             }
         }
-
 
         /// <summary>
         /// 用 puuid 查遊戲名稱 (GameName) 和標籤 (TagLine)
@@ -73,13 +73,10 @@ namespace LolTeamTracker.Api.Services
             }
         }
 
-
-
-
         /// <summary>
         /// 查詢單場詳細資訊
         /// </summary>
-        /// <param name="matchId"></param>
+        /// <param name="matchId">遊戲場次編號</param>
         /// <returns></returns>
         public async Task<string> GetMatchSummary(string matchId)
         {
@@ -114,10 +111,10 @@ namespace LolTeamTracker.Api.Services
         /// <summary>
         /// 用 matchId 查比賽列表細節
         /// </summary>
-        /// <param name="matchId"></param>
+        /// <param name="matchId">遊戲場次編號</param>
         /// <param name="puuid"></param>
-        /// <param name="gameName"></param>
-        /// <param name="tagLine"></param>
+        /// <param name="gameName">遊戲名稱</param>
+        /// <param name="tagLine">#標籤</param>
         /// <returns></returns>
         public async Task<MatchSummary?> GetMatchSummaryAsync(string matchId, string puuid, string gameName, string tagLine)
         {
