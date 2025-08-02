@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddLiveReload();
-builder.Services.AddScoped<MatchAnalyzer>(); // 註冊 MatchAnalyzer 
+builder.Services.AddHttpClient<MatchAnalyzer>(); // 註冊 MatchAnalyzer 
 builder.Services.AddHttpClient<RiotApiService>(); // 註冊 RiotApiService 
 builder.Services.AddScoped<RiotDataDownloader>(provider =>
     new RiotDataDownloader(
@@ -71,7 +71,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage(); // 顯示詳細錯誤
 }
 
-app.UseStaticFiles(); 
+//app.UseStaticFiles();  // 暫時不用 wwwroot\StaticFiles 
 
 app.UseHttpsRedirection();
 

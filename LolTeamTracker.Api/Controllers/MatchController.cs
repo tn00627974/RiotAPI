@@ -1,4 +1,4 @@
-using LolTeamTracker.Api.Models;
+ï»¿using LolTeamTracker.Api.Models;
 using LolTeamTracker.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,73 +8,85 @@ namespace LolTeamTracker.Api.Controllers;
 [Route("api/[controller]")]
 public class MatchController : ControllerBase
 {
-    private readonly RiotApiService _riot;
-    private readonly MatchAnalyzer _analyzer;
+    //private readonly RiotApiService _riotApiService;
+    private readonly MatchAnalyzer _matchAnalyzer;
 
 
-    public MatchController (RiotApiService riot,MatchAnalyzer analyzer)
+    public MatchController (MatchAnalyzer matchAnalyzer)
     {
-        _riot = riot;
-        _analyzer = analyzer;
+        //_riotApiService = riotApiService;
+        _matchAnalyzer = matchAnalyzer;
     }
 
     /// <summary>
-    /// ¨ú±o«ü©wª±®aªº¤ñÁÉ¦Cªí
+    /// å–å¾—æŒ‡å®šç©å®¶çš„æ¯”è³½åˆ—è¡¨
     /// </summary>
     /// <remarks>
-    /// ½d¨Ò¡G
+    /// ç¯„ä¾‹ï¼š
     /// GET /api/match/Faker/TW2
     /// </remarks>
-    /// <param name="gameName">¥l³ê®v¦WºÙ¡A¨Ò¦pFaker</param>
-    /// <param name="tagLine">¦a°Ï¥N½X¡A¨Ò¦p TW2</param>
-    /// <param name="count">·j´M³õ¦¸</param>
+    /// <param name="gameName">å¬å–šå¸«åç¨±ï¼Œä¾‹å¦‚Faker</param>
+    /// <param name="tagLine">åœ°å€ä»£ç¢¼ï¼Œä¾‹å¦‚ TW2</param>
+    /// <param name="count">æœå°‹å ´æ¬¡</param>
     /// <returns></returns>
     [HttpGet("{gameName}/{tagLine}")]
     public async Task<IActionResult> GetMatchList(string gameName, string tagLine, int count = 50)
     {
-        // ¹w³]0~100¤£±o¶W¹LAPI­­¨î
+
         //if (count <= 0) { count = 50; }
         //else if (count > 100) { count = 100; }
+        //var puuid = await _riotApiService.GetPuuidAsync(gameName, tagLine); 
+        //var matchIds = await _riotApiService.GetMatchIdsAsync(puuid,0,count);
+        //var result = new List<MatchSummary>();
+
+        // é è¨­0~100ä¸å¾—è¶…éAPIé™åˆ¶
         count = Math.Clamp(count, 50, 100);
-
-        var puuid = await _riot.GetPuuidAsync(gameName, tagLine); 
-        var matchIds = await _riot.GetMatchIdsAsync(puuid,0,count);
-        var result = new List<MatchSummary>();
-
-        foreach (var matchId in matchIds)
-        {
-            try
-            {
-                var summary = await _riot.GetMatchSummaryAsync(matchId, puuid, gameName, tagLine);
-                if (summary != null)
-                    result.Add(summary);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Åª¨ú¤ñÁÉ {matchId} ¥¢±Ñ¡G{ex.Message}");
-                    
-            }
-        }
-        return this.Ok(new
+        var result = await _matchAnalyzer.GetMatchSummariesPlayerAsync(gameName, tagLine, count);
+        return Ok(new
         {
             count = result.Count,
             data = result
         });
+
+        #region old
+        //foreach (var matchId in matchIds)
+        //{
+        //    try
+        //    {
+        //        var summary = await _matchAnalyzer.GetMatchSummaryAsync(matchId, puuid, gameName, tagLine);
+        //        if (summary != null)
+        //            result.Add(summary);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"è®€å–æ¯”è³½ {matchId} å¤±æ•—ï¼š{ex.Message}");                    
+        //    }
+        //}
+        //return this.Ok(new
+        //{
+        //    count = result.Count,
+        //    data = result
+        //});
+        #endregion
     }
     /// <summary>
-    /// ´ú¸Õ©I¥s RunAsync()¡A¶i¦æ¤@¦¸¤ÀªR¬yµ{
+    /// å–å¾—åœ˜éšŠæ‰€æœ‰ç©å®¶çš„æ¯”è³½åˆ—è¡¨
     /// </summary>
-    [HttpGet("test-run")]
-    public async Task<IActionResult> TestRunAsync()
+    /// <remarks>
+    /// ç¯„ä¾‹ï¼š
+    /// GET /api/match/team-analysis
+    /// </remarks>
+    [HttpGet("team-analysis")]
+    public async Task<IActionResult> GetMatchTeamList()
     {
         try
         {
-            await _analyzer.RunAsync();
-            return Ok("¤ÀªR§¹¦¨");
+            var results = await _matchAnalyzer.GetMatchSummariesTeamsAsync();
+            return Ok(results);
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"¿ù»~¡G{ex.Message}");
+            return StatusCode(500, $"éŒ¯èª¤ï¼š{ex.Message}");
         }
     }
 

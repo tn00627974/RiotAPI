@@ -24,6 +24,11 @@ namespace LolTeamTracker.Api.Services
             _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey);
         }
 
+
+        /*         
+         ---------------------- Riot ----------------------         
+         */
+
         /// <summary>
         /// 用遊戲名稱 {GameName} 和標籤 {TagLine} 查詢 puuid
         /// </summary>
@@ -36,7 +41,7 @@ namespace LolTeamTracker.Api.Services
             {
                 var url = $"https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}";
                 var res = await _httpClient.GetFromJsonAsync<JsonElement>(url);
-                return res.GetProperty("puuid").GetString();
+                return res.GetProperty("puuid").GetString() ;
             }
             catch (HttpRequestException ex)
             {
@@ -102,43 +107,6 @@ namespace LolTeamTracker.Api.Services
         {
             var url = $"{_baseUrl}/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}";
             return await _httpClient.GetFromJsonAsync<List<string>>(url);
-        }
-
-        /*         
-         ---------------------- match ----------------------         
-         */
-
-        /// <summary>
-        /// 用 matchId 查比賽列表細節
-        /// </summary>
-        /// <param name="matchId">遊戲場次編號</param>
-        /// <param name="puuid"></param>
-        /// <param name="gameName">遊戲名稱</param>
-        /// <param name="tagLine">#標籤</param>
-        /// <returns></returns>
-        public async Task<MatchSummary?> GetMatchSummaryAsync(string matchId, string puuid, string gameName, string tagLine)
-        {
-            var url = $"{_baseUrl}/lol/match/v5/matches/{matchId}"; // {matchId} : 遊戲對戰編號
-            var data = await _httpClient.GetFromJsonAsync<JsonElement>(url);
-            var participant = data.GetProperty("info").GetProperty("participants")
-                                  .EnumerateArray()
-                                  .FirstOrDefault(p => p.GetProperty("puuid").GetString() == puuid);
-
-            if (participant.ValueKind == JsonValueKind.Undefined) // 如果找不到對應的參與者
-                return null;
-
-            return new MatchSummary
-            {
-                GameName = gameName,
-                TagLine = tagLine,
-                Champion = participant.GetProperty("championName").GetString(),
-                Kills = participant.GetProperty("kills").GetInt32(),
-                Deaths = participant.GetProperty("deaths").GetInt32(),
-                Assists = participant.GetProperty("assists").GetInt32(),
-                Win = participant.GetProperty("win").GetBoolean(),
-                GameDate = DateTimeOffset.FromUnixTimeMilliseconds(data.GetProperty("info").GetProperty("gameStartTimestamp").GetInt64()).DateTime
-            };
-        }
-
+        }        
     }
 }
