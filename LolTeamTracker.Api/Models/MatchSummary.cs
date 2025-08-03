@@ -9,7 +9,8 @@
         public int Deaths { get; set; }
         public int Assists { get; set; }
         public bool Win { get; set; }
-        public DateTime GameDate { get; set; }
+        //public DateTime GameDate { get; set; }
+        public string GameDate { get; set; }
     }
 
 }

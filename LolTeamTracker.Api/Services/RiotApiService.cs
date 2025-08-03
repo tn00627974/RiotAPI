@@ -96,6 +96,25 @@ namespace LolTeamTracker.Api.Services
             return json;
         }
 
+
+        /// <summary>
+        /// 查詢單場詳細資訊 (含時間軸)
+        /// </summary>
+        /// <param name="matchId">遊戲場次編號</param>
+        /// <returns></returns>
+        public async Task<string> GetMatchSummaryTimeLine(string matchId)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var url = $"{_baseUrl}/lol/match/v5/matches/{matchId}/timeline?api_key={_apiKey}";
+
+            var response = await client.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var json = await response.Content.ReadAsStringAsync();
+            return json;
+        }
+
         /// <summary>
         /// 用 puuid 查比賽列表 count預設為10,最多100上限 ( API限制 )
         /// </summary>

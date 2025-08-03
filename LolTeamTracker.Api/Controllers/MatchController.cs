@@ -48,7 +48,7 @@ public class MatchController : ControllerBase
             data = result
         });
 
-        #region old
+        #region Old
         //foreach (var matchId in matchIds)
         //{
         //    try
@@ -73,8 +73,7 @@ public class MatchController : ControllerBase
     /// 取得團隊所有玩家的比賽列表
     /// </summary>
     /// <remarks>
-    /// 範例：
-    /// GET /api/match/team-analysis
+    /// 讀取team.json內的玩家資訊
     /// </remarks>
     [HttpGet("team-analysis")]
     public async Task<IActionResult> GetMatchTeamList()
@@ -89,8 +88,5 @@ public class MatchController : ControllerBase
             return StatusCode(500, $"錯誤：{ex.Message}");
         }
     }
-
-
-
 
 }

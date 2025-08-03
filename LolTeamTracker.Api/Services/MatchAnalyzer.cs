@@ -1,6 +1,7 @@
 ﻿using LolTeamTracker.Api.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Packaging.Signing;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -50,6 +51,11 @@ namespace LolTeamTracker.Api.Services
             if (participant.ValueKind == JsonValueKind.Undefined) // 如果找不到對應的參與者
                 return null;
 
+            // 處理UTC國際時間格式 => 轉為台灣時間 24小時格式
+            var dateTimeUtc = DateTimeOffset.FromUnixTimeMilliseconds(data.GetProperty("info").GetProperty("gameStartTimestamp").GetInt64()).UtcDateTime;
+            var taiwanZone = TimeZoneInfo.ConvertTimeFromUtc(dateTimeUtc, TimeZoneInfo.FindSystemTimeZoneById("Taipei Standard Time"));
+            var taiwanTime = taiwanZone.ToString("yyyy/MM/dd HH:mm:ss");
+
             return new MatchSummary
             {
                 GameName = gameName,
@@ -59,10 +65,9 @@ namespace LolTeamTracker.Api.Services
                 Deaths = participant.GetProperty("deaths").GetInt32(),
                 Assists = participant.GetProperty("assists").GetInt32(),
                 Win = participant.GetProperty("win").GetBoolean(),
-                GameDate = DateTimeOffset.FromUnixTimeMilliseconds(data.GetProperty("info").GetProperty("gameStartTimestamp").GetInt64()).DateTime
+                GameDate = taiwanTime
             };
         }
-
 
         /// <summary>
         /// 載入 JSON 檔案中的隊伍成員資料，並取得每位成員的比賽摘要列表
@@ -105,6 +110,7 @@ namespace LolTeamTracker.Api.Services
             }
             return allResults;
         }
+
         /// <summary>
         /// 邏輯化 : 取得指定玩家的比賽列表
         /// </summary>
@@ -135,7 +141,6 @@ namespace LolTeamTracker.Api.Services
             return result;
         }
 
-
         /// <summary>
         /// 載入 JSON 檔案中的成員資料
         /// </summary>
@@ -144,7 +149,7 @@ namespace LolTeamTracker.Api.Services
         /// <exception cref="FileNotFoundException"></exception>
         private async Task<List<PlayerInfo>> LoadTeamFromJson(string fileName)
         {
-            string savePath = Path.Combine(_env.ContentRootPath, "Data", "Team", fileName);
+            string savePath = Path.Combine(_env.ContentRootPath, "Data", "Team", fileName); // Path : Data/Team/team.json
             if (!File.Exists(savePath))
             {
                 throw new FileNotFoundException($"檔案 {fileName} 不存在於 {savePath}");
