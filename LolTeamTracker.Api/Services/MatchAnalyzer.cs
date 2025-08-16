@@ -44,9 +44,13 @@ namespace LolTeamTracker.Api.Services
         {
             var url = $"{_baseUrl}/lol/match/v5/matches/{matchId}"; // {matchId} : 遊戲對戰編號
             var data = await _httpClient.GetFromJsonAsync<JsonElement>(url);
-            var participant = data.GetProperty("info").GetProperty("participants")
+            var info = data.GetProperty("info");
+            var participant = info.GetProperty("participants")
                                   .EnumerateArray()
                                   .FirstOrDefault(p => p.GetProperty("puuid").GetString() == puuid);
+
+            int queueId = info.GetProperty("queueId").GetInt32(); // 遊戲模式 queueId
+            var queueName = GetQueueTypeName(queueId);
 
             if (participant.ValueKind == JsonValueKind.Undefined) // 如果找不到對應的參與者
                 return null;
@@ -65,7 +69,8 @@ namespace LolTeamTracker.Api.Services
                 Deaths = participant.GetProperty("deaths").GetInt32(),
                 Assists = participant.GetProperty("assists").GetInt32(),
                 Win = participant.GetProperty("win").GetBoolean(),
-                GameDate = taiwanTime
+                GameDate = taiwanTime,
+                GameMode = queueName
             };
         }
 
@@ -158,6 +163,19 @@ namespace LolTeamTracker.Api.Services
             // 這裡可以解析 JSON 並返回所需的資料
             var team = JsonSerializer.Deserialize<List<PlayerInfo>>(json);
             return team ?? new List<PlayerInfo>();
+        }
+
+        public static string GetQueueTypeName(int queueId)
+        {
+            switch (queueId)
+            {
+                case 400: return "Normal Draft Pick（一般選角）";
+                case 420: return "單雙積分 Solo/Duo Ranked";
+                case 430: return "Normal Blind Pick（一般盲選）";
+                case 440: return "彈性積分 Flex Ranked";
+                case 450: return "大亂鬥 ARAM";
+                default: return $"未知模式 (QueueId={queueId})";
+            }
         }
     }
 }
