@@ -48,29 +48,51 @@ namespace LolTeamTracker.Api.Services
             var participant = info.GetProperty("participants")
                                   .EnumerateArray()
                                   .FirstOrDefault(p => p.GetProperty("puuid").GetString() == puuid);
-
-            int queueId = info.GetProperty("queueId").GetInt32(); // 遊戲模式 queueId
-            var queueName = GetQueueTypeName(queueId);
-
+            
             if (participant.ValueKind == JsonValueKind.Undefined) // 如果找不到對應的參與者
                 return null;
 
+            var champion = participant.GetProperty("championName").GetString();
+            var kills = participant.GetProperty("kills").GetInt32();
+            var deaths = participant.GetProperty("deaths").GetInt32();
+            var assists = participant.GetProperty("assists").GetInt32();
+            var win = participant.GetProperty("win").GetBoolean();
+            string teamPosition = participant.GetProperty("teamPosition").GetString();
+            string laneName = GetLaneName(teamPosition);
+
             // 處理UTC國際時間格式 => 轉為台灣時間 24小時格式
-            var dateTimeUtc = DateTimeOffset.FromUnixTimeMilliseconds(data.GetProperty("info").GetProperty("gameStartTimestamp").GetInt64()).UtcDateTime;
+            var dateTimeUtc = DateTimeOffset.FromUnixTimeMilliseconds(info.GetProperty("gameStartTimestamp").GetInt64()).UtcDateTime;
             var taiwanZone = TimeZoneInfo.ConvertTimeFromUtc(dateTimeUtc, TimeZoneInfo.FindSystemTimeZoneById("Taipei Standard Time"));
             var taiwanTime = taiwanZone.ToString("yyyy/MM/dd HH:mm:ss");
+
+            // 遊戲模式
+            int queueId = info.GetProperty("queueId").GetInt32(); // 遊戲模式 queueId
+            var queueName = GetQueueTypeName(queueId);
+
+
+            // 擊殺小兵數量
+            var laneCS = participant.GetProperty("totalMinionsKilled").GetInt32();
+            var jungleCS = participant.GetProperty("neutralMinionsKilled").GetInt32();
+            var totalCS = laneCS + jungleCS;
+
+            // 金錢
+            int gold = participant.GetProperty("goldEarned").GetInt32();
 
             return new MatchSummary
             {
                 GameName = gameName,
                 TagLine = tagLine,
-                Champion = participant.GetProperty("championName").GetString(),
-                Kills = participant.GetProperty("kills").GetInt32(),
-                Deaths = participant.GetProperty("deaths").GetInt32(),
-                Assists = participant.GetProperty("assists").GetInt32(),
-                Win = participant.GetProperty("win").GetBoolean(),
+                Champion = champion,
+                Kills = kills,
+                Deaths = deaths,
+                Assists = assists,
+                Win = win,
+                LaneName = laneName,
                 GameDate = taiwanTime,
-                GameMode = queueName
+                GameMode = queueName,
+                LaneCS = laneCS,
+                JungleCS = jungleCS,
+                Gold = gold
             };
         }
 
@@ -165,6 +187,15 @@ namespace LolTeamTracker.Api.Services
             return team ?? new List<PlayerInfo>();
         }
 
+        /*         
+         ---------------------- Helpers ----------------------         
+         */
+
+        /// <summary>
+        /// 查詢遊戲模式
+        /// </summary>
+        /// <param name="queueId">模式編號</param>
+        /// <returns>返回模式名稱</returns>
         public static string GetQueueTypeName(int queueId)
         {
             switch (queueId)
@@ -174,7 +205,36 @@ namespace LolTeamTracker.Api.Services
                 case 430: return "Normal Blind Pick（一般盲選）";
                 case 440: return "彈性積分 Flex Ranked";
                 case 450: return "大亂鬥 ARAM";
+                case 480: return "一般(超速衝點)";
+                case 750: return "Clash 盃";
                 default: return $"未知模式 (QueueId={queueId})";
+            }
+        }
+
+        /// <summary>
+        /// 玩家選擇路線
+        /// </summary>
+        /// <param name="teamPosition"></param>
+        /// <returns>返回玩家路線</returns>
+        public static string GetLaneName(string teamPosition)
+        {
+            switch (teamPosition)
+            {
+                case "TOP":
+                    return "上路";
+                case "JUNGLE":
+                    return "打野";
+                case "MIDDLE":
+                //case "MID":
+                    return "中路";
+                case "BOTTOM":
+                //case "BOT":
+                    return "下路";
+                case "UTILITY":
+                //case "SUPPORT":
+                    return "輔助";
+                default:
+                    return $"未知路線 ({teamPosition})";
             }
         }
     }

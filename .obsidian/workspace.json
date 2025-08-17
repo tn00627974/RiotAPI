@@ -11,14 +11,12 @@
             "id": "ea4e756311860dfc",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "image",
               "state": {
-                "file": "README.md",
-                "mode": "source",
-                "source": false
+                "file": "Pasted image 20250709223801.png"
               },
-              "icon": "lucide-file",
-              "title": "README"
+              "icon": "lucide-image",
+              "title": "Pasted image 20250709223801"
             }
           }
         ]
@@ -142,13 +140,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md",
+                "file": "Pasted image 20250709223801.png",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "README 的大綱"
+              "title": "Pasted image 20250709223801 的大綱"
             }
           }
         ],
@@ -156,7 +154,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -170,6 +169,10 @@
   },
   "active": "ea4e756311860dfc",
   "lastOpenFiles": [
+    "Dev文件.md",
+    "README.md",
+    "Ulysses/GitHub專案/RiotServer/Riot API Key.md",
+    "Pasted image 20250709223335.png",
     "LolTeamTracker.Api/bin/Debug/net8.0/Data/Static/champion.json",
     "LolTeamTracker.Api/Data/Static/champion.json",
     "LolTeamTracker.Api/bin/Debug/net8.0/Data/champion.json",
@@ -179,17 +182,12 @@
     "LolTeamTracker.Web/obj/project.nuget.cache",
     "LolTeamTracker.Api/Models/MatchSummary.cs",
     "LolTeamTracker.Api/Services/RiotApiService.cs",
-    "Ulysses/GitHub專案/RiotServer/Riot API Key.md",
-    "Dev文件.md",
     "LolTeamTracker/Controllers/ChampionRoot.cs",
-    "LolTeamTracker/Controllers/Champion.cs",
     "Pasted image 20250709223824.png",
     "Pasted image 20250709223801.png",
     "Pasted image 20250709223411.png",
-    "Pasted image 20250709223335.png",
     "Pasted image 20250709223325.png",
     "Pasted image 20250709223333.png",
-    "README.md",
     "WebApplication1/Data/Static/images/1.jpg",
     "WebApplication1/Data/Static/modern-login-template/1.jpg"
   ]
